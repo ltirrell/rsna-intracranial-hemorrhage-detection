@@ -6,17 +6,16 @@
   - NOTE: links to all notebooks in this directory are available from [here](https://www.kaggle.com/c/rsna-intracranial-hemorrhage-detection/discussion/114214) and are licensed under [Apache version 2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ## Submissions
-- Forked v5 of jhowaards submission notebook
-- made minor changes on number of epochs
-- use downsampled TIF images for initial trining
-- commited on Kaggle, which completed up to stage 'dcm-384-2' (running two epochs of DICOMs, downsampled to 384x384)
-- saved s[1-4], dcm-384-[0-2] as a Kaggle dataset
-- loaded 'dcm-384-2', used that in the 'Prepare for submission' section
-- Currently commiting a version that runs 2 epochs of the full dataset
+- Forked v11 of jhowaards submission notebook
+- made minor changes on number of epochs etc
+- use downsampled JPEG images for initial training
+- commited on Kaggle, which completed up to stage 'dcm-256-bs64-ep2' (running two epochs of DICOMs, downsampled to 256x256)
+- saved initial trainings, downsamped to 96x96, 160x160, and 256x256
+- loaded 'dcm-256-bs64-ep2', used that in the 'Prepare for submission' section
+- Currently commiting a version that runs 2 epochs of the dataset at 384x384, then at full size (512x512)
 
 ### Scores
-- Submission based off of 'dcm-384-2' gives a score of 0.087 (currently top 50%)
+- Submission based off of 'dcm-256-bs64ep2' gives a score of 0.082 (currently top 50%)
 
 ## TODO
-- pull jhoward's new notebooks that use JPG instead of TIFF
-- use newer version of jhoward's notebook for submission, using fixed training vs. validation split and JPG images
+- Get things up and running on GCP, so can play around with params etc more

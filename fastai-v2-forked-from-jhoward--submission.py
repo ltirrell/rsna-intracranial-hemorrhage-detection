@@ -247,7 +247,6 @@ def do_fit(bs,sz,epochs,lr, freeze=True,epochs_frozen=1):
     learn.unfreeze()
     learn.fit_one_cycle(epochs, slice(lr), cbs=cbs)
 
-
 # Now we can train at 3 different sizes.
 
 # In[28]:
@@ -412,8 +411,8 @@ learn.load('dcm-256-bs64ep2,3')  # had to restart kernel
 # In[35]:
 
 
-#@# only clear_state if freezing
-# haven't had to deal with this before
+#@# ran this to create dcm-384-bs64-ShortEpoch0pt2-2,2.pth, seems to do the wrong thing
+#   (short epochs on all runs)
 def fit_tune2(bs, sz, epochs, lr, freeze=True,epochs_frozen=1):
     dbch = get_data(bs, sz)
     learn.dbunch = dbch
@@ -427,28 +426,55 @@ def fit_tune2(bs, sz, epochs, lr, freeze=True,epochs_frozen=1):
     learn.fit_one_cycle(epochs, slice(lr))
 
 
+
+
+def fit_tune3(bs, sz, epochs, lr):
+    """ jhoward's exact def"""
+    dbch = get_data(bs, sz)
+    learn.dbunch = dbch
+    learn.opt.clear_state()
+    learn.unfreeze()
+    learn.fit_one_cycle(epochs, slice(lr))
+                                                    
 # In[ ]:
 
 
-fit_tune2(64, 384, 4, 3e-4, epochs_frozen=2)
-learn.save('dcm-384-bs64ep2,4')
-learn.lr_find()
-
-
-# In[ ]:
-
-
-fit_tune2(64, 384, 2, 3e-4, freeze=False)
-learn.save('dcm-384-bs64ep5-6')
-learn.lr_find()
-
+fit_tune2(64, 384, 2, 3e-4, epochs_frozen=2)
+learn.save('dcm-384-bs64-ShortEpoch0pt2-2,2')
+#learn.lr_find()
 
 # In[ ]:
 
+# #@# stopped and need to restart the kerne;
+# #@# re-ran from the beginning, except GPU stuff, then loaded from here
+learn.load('dcm-384-bs64-ShortEpoch0pt2-2,2')
 
-fit_tune2(32, 512, 5, 3e-4, epochs_frozen=2)
-learn.save('dcm-512-bs32ep2,5')
-learn.lr_find()
+fit_tune3(64, 384, 3, 3e-4)
+learn.save('dcm-384-bs64--ep3')
+
+"""
+epoch     train_loss  valid_loss  accuracy_multi  accuracy_any  time                                     
+0         0.079415    0.081572    0.973997        0.949942      3:38:27                      
+1         0.072198    0.079009    0.974389        0.949687      3:38:33                             
+2         0.067840    0.077374    0.975158        0.951617      3:38:51 
+"""
+
+# stopped, then running in jupyter lab to see lr
+learn.load('dcm-384-bs64--ep3')
+fit_tune3(64, 384, 1, 3e-4)
+learn.save('dcm-384-bs64--ep4')
+
+"""                                                                                          
+epoch     train_loss  valid_loss  accuracy_multi  accuracy_any  time    
+3         0.067134    0.077271    0.975314        0.952148
+"""
+
+# In[ ]:
+learn.load('dcm-384-bs64--ep4')
+fit_tune(32, 512, 2, 3e-4, epochs_frozen=2)
+learn.save('dcm-512-bs32ep1,2')
+fit_tune3(32, 512, 1, 3e-4)
+learn.save('dcm-512-bs32--ep3')
 
 
 # ## Prepare for submission
@@ -533,7 +559,7 @@ len(df_csv)
 # In[41]:
 
 
-len(preds)
+
 
 
 # In[ ]:

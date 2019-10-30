@@ -232,11 +232,10 @@ def get_learner_full():
     learn = cnn_learner(dbch, resnet101, loss_func=loss_func, opt_func=opt_func, metrics=metrics)
     return learn.to_fp16()
 learn = get_learner_full()
-learn.load('dcm-384-bs64--ep4')
-
 
 learn.load('dcm-384-bs64--ep4')
 dbch = get_data(32, 512)
+lr=1e-4
 learn.dbunch = dbch
 learn.opt.clear_state()
 learn.unfreeze()
@@ -249,6 +248,34 @@ create_submission('512-ep2')
 learn.fit_one_cycle(1, slice(lr))
 learn.save('dcm-512-bs32--ep3')
 create_submission('512-ep3')
+
+# use mixup and ensemble?
+from fastai2.vision.core import *
+
+mixup = MixUp(0.3)
+def get_learner_mixup():
+    dbch = get_data(64,384)
+    learn = cnn_learner(dbch, resnet101, loss_func=loss_func, opt_func=opt_func, metrics=metrics, cbs=mixup)
+    return learn.to_fp16()
+
+
+learn = get_learner_mixup()
+
+learn.load('dcm-384-bs64--ep4')
+
+dbunch = get_data(64, 384)
+lr = 3e-4
+learn.opt.clear_state()
+learn.unfreeze()
+learn.fit_one_cycle(1, slice(lr))
+learn.save('dcm-384-bs32-mixup--ep1')
+create_submission('384mixup-1')
+learn.fit_one_cycle(1, slice(lr))
+learn.save('dcm-384-bs32-mixup--ep3')
+create_submission('384mixup-2')
+learn.fit_one_cycle(1, slice(lr))
+learn.save('dcm-384-bs32-mixup--ep3')
+create_submission('384mixup-3')
 
 # ============================
 # ## Prepare for submission
